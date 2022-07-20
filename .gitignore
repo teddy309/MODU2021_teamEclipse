@@ -1,0 +1,6 @@
+#LSS edited
+# Custom added by LSS
+git_remote/*
+dataset/*
+runs/*
+wandb/*
