@@ -13,9 +13,10 @@ from datetime import datetime
 from transformers import AdamW
 
 from utils import compute_metrics,  MCC, get_label, set_seed
-from utils import MODEL_CLASSES, MODEL_PATH_MAP
+from utils import MODEL_PATH_MAP
 from utils import TOKEN_MAX_LENGTH #SPECIAL_TOKENS
-from utils import getParentPath, save_model, load_model, save_json, DATASET_PATHS
+from utils import getParentPath, save_model, load_model, save_json, DATASET_PATHS #print_timeNow
+
 
 from kobert_datasets import COLA_dataset
 from kobert_models import model_COLA
@@ -28,8 +29,6 @@ taskDir_path, fname_train, fname_dev, fname_test, _ = DATASET_PATHS[task_name]
 
 data_path=os.getcwd()+'/../../dataset/'
 max_tokenizer_length = TOKEN_MAX_LENGTH[task_name] #100 #20 #WiC 데이터는 (SENTENCE1,SENTENCE2) 문장길이가 길어서 maxlength가 넘으면 잘라줬음. 나중에 넘는건 제외하는 식으로 바꿔야함.
-
-#config_class, model_class, model_tokenizer = MODEL_CLASSES['kobert'] #
 
 countEpoch = 0
 
@@ -154,8 +153,8 @@ if __name__ == "__main__":
     homePth = getParentPath(os.getcwd())
     datasetPth = homePth+'/dataset/'
     print('homePth:',homePth,', curPth:',os.getcwd())
-    start_day_time=datetime.now().strftime("%m/%d, %H:%M:%S")
-    print('training start at (date, time): ',start_day_time)
+    #start_day_time=print_timeNow()
+    #print('training start at (date, time): ',print_timeNow())
 
     tsvPth_train = datasetPth+taskDir_path+fname_train  #'task1_grammar/NIKL_CoLA_train.tsv'
     tsvPth_dev = datasetPth+taskDir_path+fname_dev #'task1_grammar/NIKL_CoLA_dev.tsv'
@@ -216,11 +215,10 @@ if __name__ == "__main__":
     eval_cola(mymodel, InferenceLoader, bs, device) #test acc 결과뽑기.
     modelOutput = inference_cola(mymodel, InferenceLoader, bs, device)
 
-    end_day_time=datetime.now().strftime("%m/%d, %H:%M:%S") #Date %m/%d %H:%M:%S
-    print(f'training model from {start_day_time} to {end_day_time} (date, time): ')
+    ## TODO: save model path ##
 
-    ##save model path##
-
+    #end_day_time=print_timeNow()
+    #print(f'training model from {start_day_time} to {end_day_time} (date, time): ')
     print('finish')
     print('<SUMMARY>')
     print(f'task:{task_name}, model:{model_name}({model_type}), bs:{bs}, epochs:{epochs}, load/save model:{bool_load_model}/{bool_save_model}, randSeedNum:{random_seed_int}')

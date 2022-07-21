@@ -16,12 +16,12 @@ from transformers import AdamW
 from utils import compute_metrics, get_label, set_seed
 from utils import MODEL_CLASSES, MODEL_PATH_MAP
 from utils import TOKEN_MAX_LENGTH #SPECIAL_TOKENS
-from utils import getParentPath, save_model, load_model, save_json, DATASET_PATHS
+from utils import getParentPath, save_model, load_model, save_json, DATASET_PATHS #print_timeNow
 
 from kobert_datasets import BoolQA_dataset 
 from kobert_models import model_BoolQA 
 
-model_name = 'koelectra_QA' #'kobert', 'roberta-base', 'koelectra', 'koelectra_QA', 'koelectra_tunib'
+model_name = 'koelectra' #'kobert', 'roberta-base', 'koelectra', 'koelectra_QA', 'koelectra_tunib'
 task_name = 'BoolQ' #'COLA', 'WiC', 'COPA', 'BoolQ'
 #config_class, model_class, model_tokenizer = MODEL_CLASSES[model_name] #
 taskDir_path, fname_train, fname_dev, fname_test, _ = DATASET_PATHS[task_name]
@@ -49,10 +49,7 @@ def train_boolq(model, data_loader, batch_size, epochs, lf, optimizer, device):
         mini_batch = 0
         print(f'[epoch {countEpoch+_i}]')
         
-        #Siamese-BERT: WiC_biSentence(dataset), model_WiC_biSent(model)
-        for batchIdx, (input_ids, token_type_ids, attention_mask, label, sepIdx_s, sepIdx_e) in enumerate(data_loader):
-            #print('[epoch, batch_index]',_ ,batchIdx) #
-
+        for batchIdx, (input_ids, token_type_ids, attention_mask, label) in enumerate(data_loader):
             model.zero_grad() #model weight 초기화
 
             #QAset_token
@@ -61,25 +58,14 @@ def train_boolq(model, data_loader, batch_size, epochs, lf, optimizer, device):
             attention_mask = attention_mask.to(device)
 
             label = label.long().to(device)
-            sepIdx_s = sepIdx_s.long().to(device)
-            sepIdx_e = sepIdx_e.long().to(device)
 
-            output = model(input_ids, token_type_ids, attention_mask, sepIdx_s, sepIdx_e) #shape: 
+            output = model(input_ids, token_type_ids, attention_mask) #shape: 
             
             #customLoss = 
             loss = lf(output,label) #lf(output,label)
             #pred = output #torch.argmax(output,dim=-1)
             pred = torch.argmax(output,dim=-1)
 
-            #print(f'types: pred {type(pred)}, label {type(label)}, loss {type(loss)}') #<class 'torch.Tensor'>, <class 'torch.Tensor'>, <class 'torch.Tensor'>
-            #print(f'shape: pred {pred.shape}, label {label.shape}, loss {loss.shape}')
-
-            #input = torch.randn(3, 5, requires_grad=True)
-            #target = torch.empty(3, dtype=torch.long).random_(5)
-            #print('example shape: ', input.shape, target.shape, lf(input, target).shape) #torch.Size([3, 5]) torch.Size([3]) -> torch.Size([])
-
-            #print(f'output={output.shape}, label={label.detach().cpu().shape}') # torch.Size([50, 1]), torch.Size([50])
-            #print(f'loss={loss}, pred={pred.detach().cpu().shape}') # 
             correct += sum(pred.detach().cpu()==label.detach().cpu())
             all_loss.append(loss)
             loss.backward() #기울기 계산
@@ -103,26 +89,15 @@ def eval_boolq(model, data_loader, batch_size, device):
     y_true = None #label list
     y_pred = None #model prediction list
 
-    for batchIdx, (input_ids, token_type_ids, attention_mask, label, sepIdx_s, sepIdx_e) in enumerate(data_loader):
+    for batchIdx, (input_ids, token_type_ids, attention_mask, label) in enumerate(data_loader):
         with torch.no_grad(): #autograd 끔->속도향상. 사실 model.eval()하면 안해줘도 됨.
             input_ids = input_ids.to(device) #move param_buffers to gpu
             token_type_ids = token_type_ids.to(device)
             attention_mask = attention_mask.to(device)
-
-            #print(label, sepIdx_s, sepIdx_e, type(label), type(sepIdx_s), type(sepIdx_e)) # 20, tensor
             
             label = label.long().to(device)
-            sepIdx_s = sepIdx_s.long().to(device)
-            sepIdx_e = sepIdx_e.long().to(device)
 
-            #print(input_ids1.shape, token_type_ids1.shape, attention_mask1.shape) #torch.Size([bs, 100]) * 3
-            #print(input_ids2.shape, token_type_ids2.shape, attention_mask2.shape) #torch.Size([bs, 100]) * 3
-
-            output = model(input_ids, token_type_ids, attention_mask, sepIdx_s, sepIdx_e)
-            #print('loss_input shape: ',output.shape) #torch.Size([10, 2]) #batch마다 한번씩.
-            #print('model output: ',output, output.shape,' -> ', torch.argmax(output,dim=1).shape)
-            #logits = torch.argmax(output,dim=1) #output #argmax가 안되고 있는거같아서 한번 체크하기.
-            #print('output_cat shape: ',output.shape, output[0])
+            output = model(input_ids, token_type_ids, attention_mask)
 
         if y_pred is None:
             y_pred = output.detach().cpu().numpy()
@@ -142,17 +117,15 @@ def inference_boolq(model, data_loader, batch_size, device):
 
     y_pred = None #model prediction list
 
-    for batchIdx, (input_ids, token_type_ids, attention_mask, label, sepIdx_s, sepIdx_e) in enumerate(data_loader):
+    for batchIdx, (input_ids, token_type_ids, attention_mask, label) in enumerate(data_loader):
         with torch.no_grad(): #autograd 끔->속도향상. 사실 model.eval()하면 안해줘도 됨.
             input_ids = input_ids.to(device) #move param_buffers to gpu
             token_type_ids = token_type_ids.to(device)
             attention_mask = attention_mask.to(device)
 
             label = label.long().to(device)
-            sepIdx_s = sepIdx_s.long().to(device)
-            sepIdx_e = sepIdx_e.long().to(device)
 
-            output = model(input_ids, token_type_ids, attention_mask, sepIdx_s, sepIdx_e)
+            output = model(input_ids, token_type_ids, attention_mask)
 
         if y_pred is None:
             y_pred = output.detach().cpu().numpy()
@@ -172,12 +145,12 @@ if __name__ == "__main__":
     homePth = getParentPath(os.getcwd())
     datasetPth = homePth+'/dataset/'
     print('homePth:',homePth,', curPth:',os.getcwd())
-    start_day_time=datetime.now().strftime("%m/%d, %H:%M:%S")
-    print('training start at (date, time): ',start_day_time)
+    #start_day_time=print_timeNow()
+    #print('training start at (date, time): ',print_timeNow())
     
     tsvPth_train = datasetPth+taskDir_path+fname_train #'task2_homonym/NIKL_SKT_WiC_Train.tsv'
     tsvPth_dev = datasetPth+taskDir_path+fname_dev #'task2_homonym/NIKL_SKT_WiC_Test_labeled.tsv'
-    tsvPth_test = datasetPth+taskDir_path+_#fname_test #'task2_homonym/NIKL_SKT_WiC_Test_labeled.tsv'
+    tsvPth_test = datasetPth+taskDir_path+fname_test #'task2_homonym/NIKL_SKT_WiC_Test_labeled.tsv'
 
     bs = 20 #100 #10,20,100,200
     epochs= 0 #2#20#0#50#100 #10
@@ -189,7 +162,7 @@ if __name__ == "__main__":
     set_seed(random_seed_int, device) #random seed 정수로 고정.
 
     bool_save_model, bool_load_model, bool_save_output = False, False, False #default: False, True, True
-    ## model save/load path & save_output_path ##
+    ## TODO: model save/load path & save_output_path ##
 
     lf = nn.CrossEntropyLoss()
 
@@ -231,11 +204,10 @@ if __name__ == "__main__":
     eval_boolq(mymodel, InferenceLoader, bs, device) #test acc 결과뽑기.
     modelOutput = inference_boolq(mymodel, InferenceLoader, bs, device)
 
-    end_day_time=datetime.now().strftime("%m/%d, %H:%M:%S") #Date %m/%d %H:%M:%S
-    print(f'training model from {start_day_time} to {end_day_time} (date, time): ')
+    ## TODO: save model path ##
 
-    ##save model path##
-
+    #end_day_time=print_timeNow()
+    #print(f'training model from {start_day_time} to {end_day_time} (date, time): ')
     print('<SUMMARY>')
     print(f'task:{task_name}, model:{model_name}({model_type}), bs:{bs}, epochs:{epochs}, load/save model:{bool_load_model}/{bool_save_model}, randSeedNum:{random_seed_int}')
     print(f'bestAccuracy:{bestAcc}, bestLoss:{bestLoss}(bestLoss around epoch {bestLoss_at})')

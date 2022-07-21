@@ -2,18 +2,20 @@ import os
 import random
 import logging
 import math
-import json
 
-import torch
-import numpy as np
+from datetime import datetime
 
 import glob
 import ntpath
 
-from transformers.utils.dummy_pt_objects import BertForQuestionAnswering
+import json
 
 from sklearn.metrics import matthews_corrcoef
 
+import torch
+import numpy as np
+
+from transformers.utils.dummy_pt_objects import BertForQuestionAnswering
 from transformers import (
     BertConfig,
     DistilBertConfig,
@@ -196,6 +198,10 @@ def getParentPath(pathStr):
 #return parentPth/parentPth of pathStr -> hdd1/
 def getHomePath(pathStr):
     return getParentPath(getParentPath(getParentPath(pathStr))) #ast/src/
+
+def print_timeNow():
+    cur_day_time = datetime.now().strftime("%m/%d, %H:%M:%S") #Date %m/%d %H:%M:%S
+    return cur_day_time
 
 ##save/load model path##
 def save_model(saveDirPth_str, fileName_str, modelObj, optimizerObj): # '../model_chkpt/', 'kobert_base_cola_train_'

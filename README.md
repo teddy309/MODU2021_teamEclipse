@@ -40,7 +40,15 @@ conda 환경 install (아래 중 하나) </br>
 # python pipeline 파일 실행
 
 - conda activate [가상환경 이름] 
-- bash run_tasks.sh : run pipeline_COLA.py pipeline_COPA.py pipeline_BoolQ.py
+- bash run_tasks.sh : 파이썬 파일 순차실행 [pipeline_COLA.py pipeline_COPA.py pipeline_BoolQ.py]
+
+
+- python format_check.py (국립국어원 제출형식 포맷체크 파일)
+
+# updated
+
+- 7/21 : 불필요한 파일 삭제 및 BoolQ/WiC 수정완료.
+
 
 # TODO
 * pipeline_WiC.py on updating

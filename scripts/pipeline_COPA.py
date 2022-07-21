@@ -11,9 +11,9 @@ from pprint import pprint
 from datetime import datetime
 
 from utils import compute_metrics, get_label, set_seed
-from utils import MODEL_CLASSES, MODEL_PATH_MAP
+from utils import MODEL_PATH_MAP
 from utils import TOKEN_MAX_LENGTH #SPECIAL_TOKENS
-from utils import getParentPath, save_model, load_model, save_json, DATASET_PATHS
+from utils import getParentPath, save_model, load_model, save_json, DATASET_PATHS #print_timeNow
 
 from kobert_datasets import COPA_biSentence #COPA_uniSentence, COPA_biSentence
 from kobert_models import model_COPA_biSent #model_COPA_uniSent, model_COPA_biSent 
@@ -21,7 +21,6 @@ from kobert_models import model_COPA_biSent #model_COPA_uniSent, model_COPA_biSe
 model_name = 'koelectra' #'kobert', 'roberta-base', 'koelectra', 'koelectra_tunib'
 task_name = 'COPA' #'COLA', 'WiC', 'COPA', 'BoolQ'
 taskDir_path, fname_train, fname_dev, fname_test, _ = DATASET_PATHS[task_name]
-#config_class, model_class, model_tokenizer = MODEL_CLASSES[model_name] #
 
 
 data_path=os.getcwd()+'/../../dataset/'
@@ -117,7 +116,6 @@ def eval_copa_biModel(model, data_loader, batch_size, device):
             output2 = model(input_ids2, token_type_ids2, attention_mask2)
             #print('loss_input shape: ',output.shape) #torch.Size([10, 2]) #batch마다 한번씩.
             #print('model output: ',output, output.shape,' -> ', torch.argmax(output,dim=1).shape)
-            #logits = torch.argmax(output,dim=1) #output #argmax가 안되고 있는거같아서 한번 체크하기.
             output = torch.cat([output1, output2], dim=1) #(bs,1)*2 -> (bs*2)
             #print('output_cat shape: ',output.shape, output[0])
 
@@ -172,8 +170,8 @@ if __name__ == "__main__":
     homePth = getParentPath(os.getcwd())
     datasetPth = homePth+'/dataset/'
     print('homePth:',homePth,', curPth:',os.getcwd())
-    start_day_time=datetime.now().strftime("%m/%d, %H:%M:%S")
-    print('training start at (date, time): ',start_day_time)
+    #start_day_time=print_timeNow()
+    #print('training start at (date, time): ',print_timeNow())
     
     tsvPth_train = datasetPth+taskDir_path+fname_train 
     tsvPth_dev = datasetPth+taskDir_path+fname_dev 
@@ -236,11 +234,10 @@ if __name__ == "__main__":
     eval_copa_biModel(mymodel, InferenceLoader, bs, device) #test acc 결과뽑기.
     modelOutput = inference_copa_biModel(mymodel, InferenceLoader, bs, device)
 
-    end_day_time=datetime.now().strftime("%m/%d, %H:%M:%S") #Date %m/%d %H:%M:%S
-    print(f'training model from {start_day_time} to {end_day_time} (date, time): ')
+    ## TODO: save model path ##
 
-    ##save model path##
-    
+    #end_day_time=print_timeNow()
+    #print(f'training model from {start_day_time} to {end_day_time} (date, time): ')
     print('finish')
     print('<SUMMARY>')
     print(f'task:{task_name}, model:{model_name}({model_type}), bs:{bs}, epochs:{epochs}, load/save model:{bool_load_model}/{bool_save_model}, randSeedNum:{random_seed_int}')
