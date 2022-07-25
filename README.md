@@ -38,7 +38,6 @@ conda 환경 install (아래 중 하나) </br>
 ```
 
 # python pipeline 파일 실행
-
 - conda activate [가상환경 이름] 
 - bash run_tasks.sh : 파이썬 파일 순차실행 [pipeline_COLA.py pipeline_COPA.py pipeline_BoolQ.py]
 
@@ -46,10 +45,10 @@ conda 환경 install (아래 중 하나) </br>
 - python format_check.py (국립국어원 제출형식 포맷체크 파일)
 
 # updated
-
 - 7/21 : 불필요한 파일 삭제 및 BoolQ/WiC 수정완료.
 
 
 # TODO
-* pipeline_WiC.py on updating
-- add argparse, tensorboard
+* pipeline_WiC.py on updating -> WiC/BoolQ pipeline updated(**task에 맞게 변형해서 사용하기.**)
+- [옵션] add argparse, tensorboard
+- **일부폴더 삭제 예정** (datasets/* 8/1에 삭제 예정) 
