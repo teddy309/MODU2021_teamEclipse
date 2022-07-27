@@ -83,11 +83,11 @@ def train_wic_biModel(model, data_loader, eval_loader, batch_size, epochs, lf, o
             optimizer.step() #가중치 업데이트
             mini_batch += batch_size
 
-            if mini_batch%1000 == 0:
-                print(f'batch{mini_batch}:',end='')
-                accuracy = eval_wic_biModel(mymodel, eval_loader, bs, device)
-                acc_list.append(accuracy)
-                model.train() #set model training mode
+            #if mini_batch%1000 == 0:
+            ##    print(f'batch{mini_batch}:',end='')
+            #    accuracy = eval_wic_biModel(mymodel, eval_loader, bs, device)
+            #    acc_list.append(accuracy)
+            #    model.train() #set model training mode
             #print(mini_batch,"/",len(colaDataset)) #전체 Dataset 중 batch 단위로 수행완료. 
 
         #print(sum(all_loss)/len(all_loss))

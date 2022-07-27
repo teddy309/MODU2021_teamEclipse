@@ -24,7 +24,7 @@ class model_COLA(nn.Module):
     def __init__(self):
         super(model_COLA, self).__init__()
         self.model_PLM = model_class.from_pretrained(model_path) #[10,100]*3 -> [10,100,768]
-        self.relu = nn.ReLU() # 
+        #self.relu = nn.ReLU() # BERT에서는 GELU 사용.
         self.linear = nn.Linear(768,2) #CLS: 200->2(binary)
 
     def forward(self, input_ids, token_type_ids, attention_mask): #MyModel에 input(input_ids,token_type_ids,attention_mask) 텐서들이 들어왔을때 forward를 실행.
@@ -35,7 +35,7 @@ class model_COLA(nn.Module):
         output=self.model_PLM(input_ids=iIds, token_type_ids=tok_typeIds, attention_mask=attMask) #torch.Size([batch_size, max_len, 768])
         output=output['last_hidden_state'][:, 0, :] #CLS token: max_len의 길이 토큰 중 첫번째(0번째) 토큰의 마지막 레이어만 임베딩으로 사용
 
-        self.relu(output)
+        #output = self.relu(output)
         output=self.linear(output) #768->2
         
         return output
@@ -96,7 +96,7 @@ class model_BoolQA(nn.Module):
     def __init__(self):
         super(model_BoolQA, self).__init__()
         self.model_PLM = model_class.from_pretrained(model_path, config=modelClass_config) #[10,100]*3 -> [10,100,768]
-        self.relu = nn.ReLU() # Activation Func.
+        #self.relu = nn.ReLU() # Activation Func.
         self.linear = nn.Linear(768,2) #CLS: 200->2(binary)
 
     def forward(self, input_ids, token_type_ids, attention_mask): #MyModel에 input(input_ids,token_type_ids,attention_mask) 텐서들이 들어왔을때 forward를 실행.
@@ -108,7 +108,7 @@ class model_BoolQA(nn.Module):
 
         output=output['last_hidden_state'][:, 0, :]
 
-        self.relu(output)
+        #self.relu(output)
         output=self.linear(output) #768->2
         
         return output

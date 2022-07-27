@@ -3,6 +3,7 @@
 git_remote/*
 runs/*
 
+# dataset/ folders
 dataset/task1_grammar/*
 dataset/task2_homonym/*
 dataset/task3_COPA/*

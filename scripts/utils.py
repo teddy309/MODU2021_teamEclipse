@@ -60,6 +60,7 @@ MODEL_CLASSES = {
 }
 #'kobert-QA': (BertConfig, BertForQuestionAnswering, KoBertTokenizer)
 #'klue_roberta-base': (AutoConfig, AutoModelForSequenceClassification, AutoTokenizer)
+#'kobert_NSP': (BertConfig, BertForNextSentencePrediction, KoBertTokenizer),
 
 MODEL_PATH_MAP = {
     'distilkobert': 'monologg/distilkobert',

@@ -46,6 +46,7 @@ conda 환경 install (아래 중 하나) </br>
 
 # updated
 - 7/21 : 불필요한 파일 삭제 및 BoolQ/WiC 수정완료.
+- 7/27 : models에서 relu 삭제(COLA,BoolQ) 및 코드일부 수정
 
 
 # TODO
