@@ -1,12 +1,14 @@
 #LSS edited
 # Custom added by LSS
 git_remote/*
-runs/*
 
 # dataset/ folders
+dataset_backup/*
 dataset/task1_grammar/*
 dataset/task2_homonym/*
 dataset/task3_COPA/*
 dataset/task4_boolQA/*
 
+# loggers/outputs
 wandb/*
+runs/*
