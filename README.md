@@ -47,9 +47,9 @@ conda 환경 install (아래 중 하나) </br>
 # updated
 - 7/21 : 불필요한 파일 삭제 및 BoolQ/WiC 수정완료.
 - 7/27 : models에서 relu 삭제(COLA,BoolQ) 및 코드일부 수정
-
+- 8/03 : dataset 폴더의 데이터 삭제완료.
 
 # TODO
 * pipeline_WiC.py on updating -> WiC/BoolQ pipeline updated(**task에 맞게 변형해서 사용하기.**)
 - [옵션] add argparse, tensorboard
-- **일부폴더 삭제 예정** (datasets/* 8/1에 삭제 예정) 
+- **일부폴더 삭제 예정** (datasets/* 8/1에 삭제 예정 -> 8/3 삭제완료. 필요시 issue 남기거나 문의바람.) 
